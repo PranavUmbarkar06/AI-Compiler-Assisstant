@@ -1,7 +1,7 @@
 import re
 
 TOKENS = [
-    ('INT', r'int'),
+    ('INT', r'integer'),
     ('PRINT', r'print'),
     ('NUMBER', r'\d+'),
     ('ID', r'[a-zA-Z_][a-zA-Z0-9_]*'),
