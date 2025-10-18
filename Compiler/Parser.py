@@ -2,9 +2,15 @@ class ASTNode:
     def __init__(self, type_, **kwargs):
         self.type = type_
         self.__dict__.update(kwargs)
+        
+    def __repr__(self):
+        # A simple string representation for debugging
+        attrs = ', '.join(f'{k}={repr(v)}' for k, v in self.__dict__.items() if k != 'type')
+        return f"<{self.type} {attrs}>"
 
 
 class Parser:
+    # ... (Your Parser class implementation remains unchanged)
     def __init__(self, tokens):
         self.tokens = tokens
         self.pos = 0
@@ -16,7 +22,8 @@ class Parser:
         if self.peek()[0] == token_type:
             self.pos += 1
         else:
-            raise SyntaxError(f"Expected {token_type}, got {self.peek()}")
+            # Added token value to the error message
+            raise SyntaxError(f"Parser Error: Expected '{token_type}', got {self.peek()[0]} ('{self.peek()[1]}')")
 
     def parse_program(self):
         stmts = []
@@ -33,7 +40,7 @@ class Parser:
         elif tok == 'PRINT':
             return self.parse_print()
         else:
-            raise SyntaxError(f"Unexpected token {self.peek()}")
+            raise SyntaxError(f"Parser Error: Unexpected token {self.peek()}")
 
     def parse_decl(self):
         self.eat('INT')
@@ -55,7 +62,7 @@ class Parser:
     def parse_print(self):
         self.eat('PRINT')
         self.eat('LPAREN')
-        expr = self.parse_expr()  # allow expressions or strings
+        expr = self.parse_expr()
         self.eat('RPAREN')
         self.eat('SEMICOLON')
         return ASTNode('PRINT', expr=expr)
@@ -82,17 +89,18 @@ class Parser:
         tok_type, tok_val = self.peek()
         if tok_type == 'NUMBER':
             self.eat('NUMBER')
-            return ASTNode('NUMBER', value=int(tok_val))
+            # Use float or check for large numbers if implementing overflow check
+            return ASTNode('NUMBER', value=int(tok_val)) 
         elif tok_type == 'ID':
             self.eat('ID')
             return ASTNode('ID', name=tok_val)
         elif tok_type == 'STRING':
             self.eat('STRING')
-            return ASTNode('STRING', value=tok_val[1:-1])  # remove quotes
+            return ASTNode('STRING', value=tok_val[1:-1])
         elif tok_type == 'LPAREN':
             self.eat('LPAREN')
             expr = self.parse_expr()
             self.eat('RPAREN')
             return expr
         else:
-            raise SyntaxError(f"Unexpected token {self.peek()}")
+            raise SyntaxError(f"Parser Error: Unexpected token {self.peek()}")
