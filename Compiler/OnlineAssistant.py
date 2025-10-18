@@ -4,7 +4,7 @@ import json
 
 
 # IMPORTANT: Replace 'YOUR_API_KEY' with your actual Gemini API key.
-API_KEY = "AIzaSyAbKZo1s-_eR8mL-U6rMBExVKhtMvbobtk"
+API_KEY = "AIzaSyBP9laouivKPb8P8G-DLne2QW_uuXwvSWU"
 MODEL_NAME = 'gemini-2.5-flash-preview-09-2025'
 API_URL = f'https://generativelanguage.googleapis.com/v1beta/models/{MODEL_NAME}:generateContent'
 
