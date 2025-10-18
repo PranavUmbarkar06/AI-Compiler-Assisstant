@@ -1,9 +1,8 @@
-#Nigga
-
 class ASTNode:
     def __init__(self, type_, **kwargs):
         self.type = type_
         self.__dict__.update(kwargs)
+
 
 class Parser:
     def __init__(self, tokens):
@@ -56,11 +55,10 @@ class Parser:
     def parse_print(self):
         self.eat('PRINT')
         self.eat('LPAREN')
-        var_name = self.peek()[1]
-        self.eat('ID')
+        expr = self.parse_expr()  # allow expressions or strings
         self.eat('RPAREN')
         self.eat('SEMICOLON')
-        return ASTNode('PRINT', var=var_name)
+        return ASTNode('PRINT', expr=expr)
 
     def parse_expr(self):
         left = self.parse_term()
@@ -88,6 +86,9 @@ class Parser:
         elif tok_type == 'ID':
             self.eat('ID')
             return ASTNode('ID', name=tok_val)
+        elif tok_type == 'STRING':
+            self.eat('STRING')
+            return ASTNode('STRING', value=tok_val[1:-1])  # remove quotes
         elif tok_type == 'LPAREN':
             self.eat('LPAREN')
             expr = self.parse_expr()
@@ -95,7 +96,3 @@ class Parser:
             return expr
         else:
             raise SyntaxError(f"Unexpected token {self.peek()}")
-
-
-
-
