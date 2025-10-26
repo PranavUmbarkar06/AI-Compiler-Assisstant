@@ -1,0 +1,157 @@
+:root{
+    --bg:#1e1e1e;
+    --panel:#252526;
+    --text:#d4d4d4;
+    --accent:#007acc;
+    --error: #f44747;
+    --success: #85c46c;
+    --mono:'Roboto Mono',monospace;
+    --sans:'Inter',sans-serif;
+    
+}
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    margin:0;
+    padding:20px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+
+}
+
+.container{
+    width:90%;
+    max-width:1000px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:15px;
+
+}
+
+.editor-panel, .output-panel {
+    background:var(--panel);
+    border-radius:6px;
+    padding:12px;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+}
+
+.editor-panel {
+    flex:2;
+
+}
+
+h2{
+    font-size:1.1em;
+    margin:0 0 10px;
+    color:var(--accent);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+}
+
+#code-editor{
+    flex-grow:1;
+    font-family:var(--mono);
+    font-size:14px;
+    background:#333;
+    color:var(--text);
+    border:none;
+    border-radius:4px;
+    padding:10px;
+    outline:none;
+    resize:none;
+
+}
+
+.run-button{
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:4px;
+    padding:8px 12px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.run-button:hover{
+    background:#005f99;
+}
+
+.run-button:disabled{
+    opacity:0.6;
+    cursor:not-allowed;
+
+}
+
+.output-section{
+    margin-bottom:10px;
+}
+
+.output-section pre {
+    background:#333;
+    padding:8px;
+    border-radius:4px;
+    font-family:var(--mono);
+    font-size:0.9em;
+    white-space:pre-wrap;
+    overflow-x:auto;
+}
+
+.status-badge {
+    padding:3px 6px;
+    border-radius:4px;
+    font-size:0.8em;
+    font-weight:600;
+
+}
+
+.status-OK{
+    background:var(--success);
+
+    color:var(--bg);
+
+}
+
+.status-ERROR{
+    background:var(--error);
+
+    color:white;
+
+}
+
+.status-RUNNING{
+    background:var(--accent);
+    color:white;
+}
+
+.suggestion-item {
+    background:rgba(0,122,204,0.1);
+    border-left:3px sold var(--accent);
+    padding:6px;
+    border-radius:3px;
+    margin-bottom:6px;
+    font-size:0.9em;
+
+}
+
+.suggestion-item strong{
+    color:var(--success);
+}
+
+.suggestion-item .error-text {
+    color:var(--error);
+    font-weight:600;
+
+}
+
+@media (max-width:800px){
+    .container{
+        flex-direction:column;
+    }
+}
