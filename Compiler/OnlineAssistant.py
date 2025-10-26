@@ -73,7 +73,3 @@ def online_assistant(prompt: str, system_instruction: str = None, max_retries: i
 
   
     return False
-
-
-
-
