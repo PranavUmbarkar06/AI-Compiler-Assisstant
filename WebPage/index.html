@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Compiler Assistant</title>
+
+  <!-- CodeMirror dependencies -->
+   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/theme/dracula.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/mode/python/python.min.js"></script>
+
+  <style>
+    /* General Theme */
+    body {
+      margin: 0;
+      font-family: 'Consolas', monospace;
+      background-color: #0b0e14;
+      color: #e5e5e5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    /* Header Section */
+    header {
+      width: 100%;
+      text-align: center;
+      padding: 60px 20px 40px;
+      background: linear-gradient(180deg, #111827, #0b0e14);
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 {
+      font-size: 64px;
+      font-weight: 800;
+      color: #ff6347;
+      margin-bottom: 10px;
+      font-family: 'Trebuchet MS', sans-serif;
+    }
+
+    header p {
+      color: #c9d1d9;
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+
+    header .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .btn {
+      background-color: #ff6347;
+      border: none;
+      color: #fff;
+      padding: 10px 25px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #ff8566;
+    }
+
+    /* Playground Layout */
+    #playground {
+      display: flex;
+      width: 90%;
+      height: 70vh;
+      background: #111827;
+      border-radius: 10px;
+      border: 1px solid #333;
+      overflow: hidden;
+      margin: 40px 0;
+      resize: both;
+    }
+
+    #editor-container, #output-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #editor-container {
+      border-right: 1px solid #333;
+    }
+
+    .CodeMirror {
+      height: 100%;
+      font-size: 16px;
+    }
+
+#output {
+  flex: 1;
+  background: #0b0e14;
+  color: #00ff9f;
+  padding: 15px;
+  font-size: 15px;
+  overflow-y: auto;       /* ✅ enables vertical scrolling */
+  white-space: pre-wrap;  /* ✅ preserves newlines and wraps long lines */
+  word-wrap: break-word;
+  border: none;
+  height: 100%;
+  max-height: 80vh;       /* ✅ prevents cutting off large output */
+}
+
+
+    #output.error {
+      color: #ff5555;
+    }
+
+    /* Control Buttons */
+    #controls {
+      background: #161b22;
+      padding: 10px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      border-top: 1px solid #333;
+    }
+
+    #controls button {
+      background-color: #238636;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #controls button:hover {
+      background-color: #2ea043;
+    }
+
+    #clearBtn {
+      background-color: #b91c1c;
+    }
+
+    #clearBtn:hover {
+      background-color: #dc2626;
+    }
+
+    /* Footer */
+    footer {
+      color: #8b949e;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>AI Compiler Assistant</h1>
+    <p>A lightweight playground to test and run your custom Python compiler.</p>
+    <div class="buttons">
+      <button class="btn" onclick="scrollToPlayground()">Playground</button>
+      <a href="https://github.com/" target="_blank"><button class="btn">View Source</button></a>
+    </div>
+  </header>
+
+  <section id="playground">
+    <div id="editor-container">
+      <textarea id="codeEditor"># Write your code here...</textarea>
+    </div>
+
+    <div id="output-container">
+      <div id="controls">
+        <button id="runBtn">Run ▶</button>
+        <button id="clearBtn">Clear ✖</button>
+      </div>
+      <pre id="output"></pre>
+    </div>
+  </section>
+
+  <footer>© 2025 AI Compiler Assistant | Built with Flask + CodeMirror</footer>
+
+  <script>
+    // Scroll to playground section
+    function scrollToPlayground() {
+      document.getElementById('playground').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Initialize CodeMirror
+    const editor = CodeMirror.fromTextArea(document.getElementById("codeEditor"), {
+      lineNumbers: true,
+      mode: "python",
+      theme: "dracula",
+      autoCloseBrackets: true,
+      matchBrackets: true,
+    });
+
+    const output = document.getElementById("output");
+
+    // Run code
+    document.getElementById("runBtn").addEventListener("click", async () => {
+      const code = editor.getValue().trim();
+      output.textContent = "Running...";
+      output.classList.remove("error");
+
+      try {
+        const res = await fetch('/run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+
+        const result = await res.json();
+        if (result.error && !result.output) {
+          output.textContent = "Error: " + result.error;
+          output.classList.add("error");
+        } else {
+          output.textContent = result.output || result.error || "No output.";
+          if (result.error) output.classList.add("error");
+        }
+      } catch (err) {
+        output.textContent = "Request failed: " + err;
+        output.classList.add("error");
+      }
+    });
+
+    // Clear code & output
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      editor.setValue("");
+      output.textContent = "";
+    });
+  </script>
+</body>
+</html>
