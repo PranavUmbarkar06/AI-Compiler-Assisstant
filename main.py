@@ -1,79 +1,141 @@
-from Compiler import OfflineAssistant as off,OnlineAssistant as on
-# -----------------------------------------------------------
-import re 
+# main.py
 import sys
+import traceback
+from io import StringIO
+
+# Try to import Compiler modules (adjust path elsewhere if needed)
+try:
+    from Compiler import OnlineAssistant as on, OfflineAssistant as off, Lexer, Parser, Evaluator
+except Exception:
+    # if running from project root and Compiler is sibling, try relative import fallback
+    import os
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    compiler_dir = os.path.join(current_dir, "Compiler")
+    if compiler_dir not in sys.path:
+        sys.path.insert(0, compiler_dir)
+    from Compiler import OnlineAssistant as on, OfflineAssistant as off, Lexer, Parser, Evaluator
 
 
-def refine_code(code):
-    new_code=''
-    for i in code:
-        if i in ['\n']:
-            new_code+=' '
-            continue
-        new_code+=i
-    return new_code
-
-
-if __name__ == '__main__':
-
-
-    code=open('main','r').read()
-    code=refine_code(code)
-    
-    #ONLINE
-    prompt_query = f"""
-    Below is the complete Python code implementing a custom language compiler/interpreter, featuring a Lexer, Parser (Recursive Descent), and an Interpreter.
-
-    The language supports:
-    - Variable declaration (integer x = 10;)
-    - Assignment (x = 20;)
-    - Integer arithmetic (+, -, *, / with integer division)
-    - Printing strings and expressions (print("Hello"); print(x + 1);)
-    - Parentheses for precedence.
-
-    Please analyze the provided code and give structured, actionable feedback focusing on the following areas:
-
-    ---
-
-    ## 1. Code Optimizations and Performance Suggestions 🚀
-    Identify specific lines or components in the Lexer, Parser, or Interpreter that could be refactored for better performance or Pythonic clarity.
-    - **Lexer:** Are the regex patterns efficient, or could the token definition order be improved?
-    - **Interpreter:** Are there data structure changes that could speed up variable lookups (though the current global scope is simple)?
-
-    ---
-
-    ## 2. Robustness and Error Handling Suggestions 🛡️
-    Point out potential runtime errors, type-checking issues, or logical flaws that the current implementation doesn't fully guard against.
-    - **Type System:** The current language is only for integers. Suggest how to enforce the 'integer' type during **Assignment** to prevent bugs like `x = "hello";` if the parser was extended to allow un-declared string assignments.
-    - **Ambiguity/Syntax:** Are there any cases where the grammar might lead to unexpected parsing (e.g., precedence issues, although arithmetic precedence seems correct)?
-    - **Declaration/Redeclaration:** What happens if a user tries `integer x = 5; integer x = 10;`? Suggest a check to prevent this.
-
-    ---
-
-    ## 3. Feature Enhancements and Architecture Improvements ✨
-    Suggest **three** logical, next-step features for this language and briefly describe the *minimum required changes* in each of the three components (Lexer, Parser, Interpreter) to implement them.
-
-    1.  **Feature 1:** Conditional Statements (e.g., `if (x > 10) { ... }`)
-    2.  **Feature 2:** String Concatenation (e.g., `print("Value: " + y);`)
-    3.  **Feature 3:** Single-line Comments (e.g., `// This is a comment`)
-
-    --- START OF CODE ---
-    {code}
-    --- End of Code
+def run_compiler_from_code(code: str):
     """
-    system_role = "Act as a professional compiler. Give nice helpful suggestions like a nice person."
+    Fallback assistant pipeline. Tries online assistant, otherwise offline assistant.
+    Returns a dict with keys: 'assistant' (raw response) and 'assistant_type' ('online'|'offline').
+    """
+    system_instruction = r'''
+    You are a friendly, homely compiler assistant who reviews user code to find syntax, logical, and runtime errors.
+    You point out exact lines and explain issues clearly yet warmly.
+    Use plain, comforting language, not robotic tone.
+    Return results in structured form: Errors, Explanation, Fix, Optimization, Corrected Code.
+    Always provide corrected code snippets. If code has no issues, say so and suggest small improvements.
+    Keep responses under 200 words. Focus on clarity, correctness, and empathy.
+    Let the corrected code be raw text with \n and not marked down.
     
-    result = on.online_assistant(prompt_query, system_instruction=system_role)
-    if result==False:
-        analysis = off.offline_assistant(code)
-        print("\n*** Analysis Report ***")
-        for suggestion in analysis['suggestions']:
-            print(suggestion)
-        print("\n*** Runtime Output ***")
-        print(analysis['runtime_output'])
-        print('\n*** Final Symbol Table ***')
-        print(analysis['final_state'])
-    else:
-    #OFFLINE
-        print(result)
+    This is the grammar of the language:
+    PROGRAM     → STMT_LIST EOF
+    STMT_LIST   → (STMT)*
+    STMT        → DECL | ASSIGN | PRINT_STMT
+    DECL        → "integer" ID "=" EXPR ";" 
+    ASSIGN      → ID "=" EXPR ";"
+    PRINT_STMT  → "print" "(" EXPR ")" ";"
+    EXPR        → TERM { ("+" | "-") TERM }
+    TERM        → FACTOR { ("*" | "/") FACTOR }
+    FACTOR      → NUMBER | STRING | ID | "(" EXPR ")"
+    NUMBER      → DIGIT+
+    STRING      → '"' CHAR* '"'
+    ID          → LETTER (LETTER | DIGIT | "_")*
+    LETTER      → [a-zA-Z_]
+    DIGIT       → [0-9]
     
+    
+    
+    ''' 
+    try:
+
+        response = on.online_assistant(prompt=code, system_instruction=system_instruction)
+    except Exception:
+        response = None
+
+    if not response:
+        response = off.offline_assistant(code)
+
+    return {
+        "assistant_type": "online" if response is not None and response is not off.offline_assistant.__name__ else "offline",
+        "assistant": response
+    }
+
+
+def run(code: str, show_tokens: bool = False) -> dict:
+    """
+    Execute code through Lexer->Parser->Evaluator.
+    Returns a dict:
+      {
+        "success": bool,
+        "stdout": "<captured stdout>",
+        "symbols": { ... final symbol table ... } or None,
+        "error": "<error text>" or "",
+      }
+    """
+    if code is None:
+        return {"success": False, "stdout": "", "symbols": None, "error": "No code provided."}
+
+    old_stdout = sys.stdout
+    buffer = StringIO()
+    sys.stdout = buffer
+
+    try:
+        # LEXER
+        tokens = Lexer.lexer(code)
+
+        if show_tokens:
+            print("TOKENS:")
+            for t in tokens:
+                print(" ", t)
+            print()
+
+        # PARSER
+        parser = Parser.Parser(tokens)
+        ast = parser.parse_program()
+
+        # INTERPRETER
+        interp = Evaluator.Interpreter()
+        interp.eval(ast)
+
+        # Final snapshot (keeps parity with prior prints)
+        print()
+        print(interp)
+
+        sys.stdout.flush()
+        output = buffer.getvalue()
+
+        return {"success": True, "stdout": output, "symbols": interp.symbol_table, "error": ""}
+
+    except Exception as e:
+        # restore stdout before returning
+        sys.stdout = old_stdout
+        tb = traceback.format_exc()
+        return {"success": False, "stdout": buffer.getvalue(), "symbols": None, "error": f"{type(e).__name__}: {e}\n{tb}"}
+    finally:
+        sys.stdout = old_stdout
+
+
+def main(code: str):
+    """
+    Public entry: attempt to run code; on interpreter failure, fall back to the assistant pipeline.
+    Returns a JSON-serializable dict describing either run results or assistant output.
+    """
+    try:
+        result = run(code, show_tokens=False)
+        # If interpreter raised an error (success False), fallback to assistant
+        if not result.get("success"):
+            assistant_result = run_compiler_from_code(code)
+            return {"ran": False, "run_result": result, "assistant": assistant_result}
+        else:
+            return {"ran": True, "run_result": result, "assistant": None}
+    except Exception as e:
+        # Unexpected top-level error: return assistant fallback
+        assistant_result = run_compiler_from_code(code)
+        return {"ran": False, "run_result": {"success": False, "stdout": "", "symbols": None, "error": str(e)}, "assistant": assistant_result}
+
+
+
+print(run_compiler_from_code('integer a=5; pront(a)'))

@@ -6,7 +6,7 @@ import json
 
 #model details (we will import from google docs information like api key, model name and url)
 
-API_KEY = "AIzaSyBP9laouivKPb8P8G-DLne2QW_uuXwvSWU"
+API_KEY = "AIzaSyDYL-_VJMkz2FzHqOaxZVzVg5ni_yUQmPI"
 MODEL_NAME = 'gemini-2.5-flash-preview-09-2025'
 API_URL = f'https://generativelanguage.googleapis.com/v1beta/models/{MODEL_NAME}:generateContent'
 

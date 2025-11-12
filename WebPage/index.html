@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Compiler Assistant — Clean Layout</title>
+
+  <!-- CodeMirror -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/theme/dracula.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/mode/python/python.min.js"></script>
+
+  <!-- Markdown renderer + sanitizer -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background:#0b0e14;
+      color:#e6eef6;
+      margin:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+
+    header {
+      width:100%;
+      text-align:center;
+      padding:22px 10px;
+      background:#111827;
+      border-bottom:1px solid #222;
+    }
+
+    header h1 {
+      margin:0;
+      color:#ff7b59;
+      font-size:24px;
+    }
+
+    main {
+      width:92%;
+      max-width:1000px;
+      margin:25px auto;
+      display:flex;
+      flex-direction:column;
+      gap:15px;
+    }
+
+    .panel {
+      background:#071017;
+      padding:10px;
+      border-radius:6px;
+      border:1px solid #233;
+      overflow:auto;
+    }
+
+    #editor-container {
+      display:flex;
+      flex-direction:column;
+      height:55vh;
+    }
+
+    .CodeMirror {
+      height:100%;
+      border-radius:6px;
+      font-size:15px;
+    }
+
+    #output {
+      background:#000;
+      color:#00ff7f;
+      padding:10px;
+      border-radius:6px;
+      font-family:monospace;
+      white-space:pre-wrap;
+      min-height:160px;
+    }
+
+    #assistant {
+      color:#dbefff;
+      font-size:14px;
+      white-space:pre-wrap;
+    }
+
+    .controls {
+      margin-top:8px;
+      display:flex;
+      gap:8px;
+      justify-content:flex-end;
+    }
+
+    button {
+      padding:8px 12px;
+      border-radius:6px;
+      border:0;
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    button.run { background:#28a745; color:white; }
+    button.clear { background:#dc3545; color:white; }
+
+    footer {
+      margin:18px 0 36px;
+      color:#8b949e;
+      font-size:13px;
+    }
+
+    /* Assistant markdown styling */
+    #assistant h1, #assistant h2, #assistant h3 { color:#bfe7ff; margin:6px 0; }
+    #assistant table { border-collapse:collapse; width:100%; margin:8px 0; }
+    #assistant th, #assistant td { border:1px solid rgba(255,255,255,0.06); padding:6px 8px; text-align:left; }
+    #assistant pre { background:#05111a; padding:8px; border-radius:6px; overflow:auto; color:#d8f3ff; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>AI Compiler Assistant</h1>
+  </header>
+
+  <main>
+    <!-- Code Editor -->
+    <div class="panel" id="editor-container">
+      <textarea id="code">integer x = 10;
+integer y = 5;
+integer z = x + y * (2 + 3);
+print(z);
+print("done");</textarea>
+
+      <div class="controls">
+        <button id="run" class="run">Run ▶</button>
+        <button id="clear" class="clear">Clear ✖</button>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="panel">
+      <strong>Output</strong>
+      <div id="output">(no output yet)</div>
+    </div>
+
+    <!-- Assistant -->
+    <div class="panel">
+      <strong>Assistant</strong>
+      <div id="assistant">(no assistant output)</div>
+    </div>
+  </main>
+
+  <footer>© 2025 AI Compiler Assistant | Simple & clean layout</footer>
+
+  <script>
+    // Initialize CodeMirror
+    const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+      mode: "python",
+      theme: "dracula",
+      lineNumbers: true,
+      indentUnit: 2,
+      tabSize: 2
+    });
+    editor.setSize("100%", "100%");
+
+    const runBtn = document.getElementById('run');
+    const clearBtn = document.getElementById('clear');
+    const outputEl = document.getElementById('output');
+    const assistantEl = document.getElementById('assistant');
+
+    function setOutput(text, isError=false){
+      outputEl.textContent = text || '';
+      outputEl.style.color = isError ? '#ff7a7a' : '#00ff7f';
+    }
+
+    // Render Assistant output (Markdown → HTML)
+    function renderAssistant(assistantData){
+      if (!assistantData){
+        assistantEl.innerHTML = '(no assistant output)';
+        return;
+      }
+
+      let mdText = "";
+      if (typeof assistantData === 'object'){
+        if (typeof assistantData.assistant === 'string')
+          mdText = assistantData.assistant;
+        else
+          mdText = "```\n" + JSON.stringify(assistantData, null, 2) + "\n```";
+      } else if (typeof assistantData === 'string'){
+        mdText = assistantData;
+      } else {
+        mdText = String(assistantData);
+      }
+
+      try {
+        const html = DOMPurify.sanitize(marked.parse(mdText));
+        assistantEl.innerHTML = html;
+      } catch (e) {
+        assistantEl.textContent = mdText;
+      }
+    }
+
+    runBtn.addEventListener('click', async () => {
+      const code = editor.getValue();
+      if (!code.trim()) return setOutput('No code provided.', true);
+
+      runBtn.disabled = true;
+      runBtn.textContent = 'Running…';
+      setOutput('Running...', false);
+      assistantEl.textContent = '(waiting for assistant...)';
+
+      try {
+        const res = await fetch('/run', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ code })
+        });
+        const json = await res.json();
+
+        if (json && typeof json === 'object' && ('ran' in json || 'run_result' in json || 'assistant' in json)){
+          if (json.ran){
+            const runResult = json.run_result || {};
+            let stdout = (runResult.stdout || '').trim();
+            if (runResult.symbols)
+              stdout += '\n\nFinal Symbols:\n' + JSON.stringify(runResult.symbols, null, 2);
+            setOutput(stdout || '(no stdout)');
+            renderAssistant(json.assistant || null);
+          } else {
+            setOutput('Error: ' + (json.run_result?.error || 'Execution failed'), true);
+            renderAssistant(json.assistant || json.run_result?.assistant || null);
+          }
+        } else if ('output' in json || 'error' in json){
+          if (json.error && !json.output)
+            setOutput('Error: ' + json.error, true);
+          else
+            setOutput(json.output || json.error || '(no output)', !!json.error);
+          renderAssistant(json.assistant ?? null);
+        } else {
+          setOutput('Unexpected server response', true);
+          renderAssistant(json);
+        }
+      } catch (err) {
+        setOutput('Request failed: ' + String(err), true);
+        renderAssistant(null);
+      } finally {
+        runBtn.disabled = false;
+        runBtn.textContent = 'Run ▶';
+      }
+    });
+
+    clearBtn.addEventListener('click', () => {
+      editor.setValue('');
+      setOutput('');
+      assistantEl.textContent = '';
+    });
+
+    window.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runBtn.click();
+    });
+  </script>
+</body>
+</html>
