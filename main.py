@@ -152,5 +152,70 @@ def run_compiler_assistant():
             print("\n[AI Fix Failed] Could not connect to or retrieve a fix from the Online Assistant.")
 
 
+def run_compiler_from_code(code: str):
+    """Runs the compiler assistant using a direct code string instead of test.txt."""
+    analysis = offline_assistant(code)
+    status = analysis.get('status', 'UNKNOWN_ERROR')
+    suggestions = analysis.get('suggestions', [])
+    runtime_output = analysis.get('runtime_output', '')
+
+    if status == 'OK':
+        # --- SUCCESS CASE ---
+        output = []
+        output.append("=========================================")
+        output.append("✅ FILE RUNNING FINE (from memory input)")
+        output.append("--- OUTPUT ---")
+        output.append(runtime_output if runtime_output else "No output printed.")
+        output.append("=========================================")
+        return "\n".join(output)
+
+    else:
+        # --- FAILURE CASE ---
+        output = []
+        output.append("=========================================")
+        output.append(f"❌ ERROR DETECTED (Status: {status})")
+        output.append("--- Original Compiler Diagnostics ---")
+        for suggestion in suggestions:
+            output.append(f"  {suggestion}")
+
+        output.append("\n--- Attempting AI Fix (Gemini Assistant) ---")
+
+        # System role and AI request (same as your original)
+        system_role = (
+            "You are an expert compiler error assistant. Your ONLY job is to fix the "
+            "provided source code based ONLY on the compiler diagnostics. "
+            "You MUST preserve all working code and ONLY modify lines necessary to resolve the syntax error. "
+            "Return the FULL, CORRECTED SOURCE CODE in a single triple backtick code block, nothing else."
+        )
+
+        error_message = "\n".join(suggestions)
+        prompt_query = (
+            f"Compiler Diagnostics:\n{error_message}\n\n"
+            f"Original Code to FIX:\n```\n{code}\n```\n\n"
+            f"TASK: Provide the complete, corrected source code in a single code block."
+        )
+
+        ai_response = on(prompt_query, system_instruction=system_role)
+        fixed_code = extract_code_block(ai_response) if ai_response else None
+
+        if fixed_code:
+            rerun_analysis = offline_assistant(fixed_code)
+            if rerun_analysis.get('status') == 'OK':
+                output.append("\n✅ FIX SUCCESSFUL. The corrected code is:")
+                output.append("```")
+                output.append(fixed_code)
+                output.append("```")
+                output.append("-----------------------------------------")
+                output.append("Re-run Output:")
+                output.append(rerun_analysis.get('runtime_output', ''))
+                output.append("=========================================")
+            else:
+                output.append(f"\n[Rerun Failed] Status: {rerun_analysis.get('status')}")
+        else:
+            output.append("\n[AI Fix Failed] Could not extract or get a valid fix.")
+        return "\n".join(output)
+
+
+
 if __name__ == '__main__':
     run_compiler_assistant()
