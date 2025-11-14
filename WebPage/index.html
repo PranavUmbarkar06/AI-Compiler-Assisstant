@@ -21,7 +21,6 @@
       --panel: #071017;
       --muted: #8b949e;
       --accent: #ff7b59;
-      --card-border: rgba(255,255,255,0.04);
     }
     html,body { height:100%; }
     body {
@@ -32,210 +31,69 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
     }
-
-    header {
-      width:100%;
-      text-align:center;
-      padding:20px 12px;
-      background:#0f1724;
-      border-bottom:1px solid #111827;
-    }
-    header h1 {
-      margin:0;
-      color:var(--accent);
-      font-size:22px;
-      letter-spacing:0.2px;
-    }
-
-    main {
-      width:92%;
-      max-width:1000px;
-      margin:20px auto;
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
-
-    .panel {
-      background: var(--panel);
-      padding:12px;
-      border-radius:8px;
-      border:1px solid var(--card-border);
-      overflow:auto;
-      box-shadow: 0 2px 8px rgba(3,7,18,0.6);
-    }
-
-    #editor-container {
-      display:flex;
-      flex-direction:column;
-      height:55vh;
-    }
-
-    .CodeMirror {
-      height:100%;
-      border-radius:6px;
-      font-size:15px;
-      outline: none;
-    }
-
-    .controls {
-      margin-top:10px;
-      display:flex;
-      gap:8px;
-      justify-content:flex-end;
-    }
-
-    button {
-      padding:8px 12px;
-      border-radius:8px;
-      border:0;
-      cursor:pointer;
-      font-weight:600;
-      font-size:13px;
-    }
-    button.run { background:#16a34a; color:white; }
-    button.clear { background:#ef4444; color:white; }
-
-    #output {
-      background:#000;
-      color:#00ff7f;
-      padding:10px;
-      border-radius:6px;
-      font-family:monospace;
-      white-space:pre-wrap;
-      min-height:140px;
-    }
-
-    #assistant {
-      color:#dbefff;
-      font-size:14px;
-      white-space:pre-wrap;
-    }
-
-    footer {
-      margin:18px 0 36px;
-      color:var(--muted);
-      font-size:13px;
-    }
+    header { width:100%; text-align:center; padding:20px 12px; background:#0f1724; border-bottom:1px solid #111827; }
+    header h1 { margin:0; color:var(--accent); font-size:22px; }
+    main { width:92%; max-width:1000px; margin:20px auto; display:flex; flex-direction:column; gap:14px; }
+    .panel { background: var(--panel); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); overflow:auto; }
+    #editor-container { display:flex; flex-direction:column; height:55vh; }
+    .CodeMirror { height:100%; border-radius:6px; font-size:15px; outline: none; }
+    .controls { margin-top:10px; display:flex; gap:8px; justify-content:flex-end; }
+    button { padding:8px 12px; border-radius:8px; border:0; cursor:pointer; font-weight:600; font-size:13px; }
+    button.run { background:#16a34a; color:white; } button.clear { background:#ef4444; color:white; }
+    #output { background:#000; color:#00ff7f; padding:10px; border-radius:6px; font-family:monospace; white-space:pre-wrap; min-height:140px; }
+    #assistant { color:#dbefff; font-size:14px; white-space:pre-wrap; }
+    footer { margin:18px 0 36px; color:var(--muted); font-size:13px; }
 
     /* Assistant markdown styling */
     #assistant h1, #assistant h2, #assistant h3 { color:#bfe7ff; margin:6px 0; }
-    #assistant table { border-collapse:collapse; width:100%; margin:8px 0; }
-    #assistant th, #assistant td { border:1px solid rgba(255,255,255,0.06); padding:6px 8px; text-align:left; }
     #assistant pre { background:#05111a; padding:8px; border-radius:6px; overflow:auto; color:#d8f3ff; }
 
     /* Fancy corrected code box (techy) */
-    .corrected-wrap {
-      margin-top:12px;
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      justify-content:space-between;
-    }
-    .corrected-left {
-      flex:1;
-    }
-    .corrected-title {
-      display:inline-block;
-      background:linear-gradient(90deg,#0ea5a9 0%, #60a5fa 100%);
-      color:#042027;
-      padding:6px 10px;
-      border-radius:999px;
-      font-weight:700;
-      font-size:13px;
-      margin-bottom:8px;
-      box-shadow: 0 4px 18px rgba(96,165,250,0.08);
-    }
-    .corrected-code-box {
-      background: linear-gradient(180deg, rgba(6,10,14,0.9), rgba(8,12,18,0.9));
-      border: 1px solid rgba(96,165,250,0.06);
-      padding:12px;
-      border-radius:8px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
-      white-space: pre;
-      color: #d1eaff;
-      overflow:auto;
-      font-size:13px;
-      box-shadow: 0 6px 26px rgba(2,6,23,0.6);
-    }
+    .corrected-wrap { margin-top:12px; display:flex; gap:10px; align-items:flex-start; justify-content:space-between; }
+    .corrected-left { flex:1; }
+    .corrected-title { display:inline-block; background:linear-gradient(90deg,#0ea5a9 0%, #60a5fa 100%); color:#042027; padding:6px 10px; border-radius:999px; font-weight:700; font-size:13px; margin-bottom:8px; }
+    .corrected-code-box { background: linear-gradient(180deg, rgba(6,10,14,0.9), rgba(8,12,18,0.9)); border: 1px solid rgba(96,165,250,0.06); padding:12px; border-radius:8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace; white-space: pre; color: #d1eaff; overflow:auto; font-size:13px; }
 
     /* Small action area */
-    #assistant-actions {
-      margin-top:10px;
-      display:flex;
-      justify-content:flex-end;
-      gap:8px;
-      align-items:center;
-    }
-    .btn-primary {
-      background:#2563eb;color:#fff;padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:700;
-    }
+    #assistant-actions { margin-top:10px; display:flex; justify-content:flex-end; gap:8px; align-items:center; }
+    .btn-primary { background:#2563eb;color:#fff;padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:700; }
     .btn-ghost { background:transparent;color:#dbefff;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);cursor:pointer; }
 
     /* confirmation card */
-    .replace-confirm {
-      margin-top:10px;
-      padding:10px;
-      border-radius:8px;
-      background: rgba(255,255,255,0.02);
-      border:1px solid rgba(255,255,255,0.03);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-    }
-    .transient-note {
-      color:#a7f3d0;
-      font-size:13px;
-      margin-left:8px;
-    }
-
-    /* Responsive */
-    @media (max-width:700px) {
-      .corrected-wrap { flex-direction:column; }
-      .corrected-title { margin-bottom:6px; }
-    }
+    .replace-confirm { margin-top:10px; padding:10px; border-radius:8px; background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03); display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .transient-note { color:#a7f3d0; font-size:13px; margin-left:8px; }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>AI Compiler Assistant</h1>
-  </header>
+  <header><h1>AI Compiler Assistant</h1></header>
 
   <main>
-    <!-- Code Editor -->
     <div class="panel" id="editor-container">
       <textarea id="code" placeholder="enter code here...">integer a=5</textarea>
-
       <div class="controls">
         <button id="run" class="run">Run ▶</button>
         <button id="clear" class="clear">Clear ✖</button>
       </div>
     </div>
 
-    <!-- Output -->
     <div class="panel">
       <strong>Output</strong>
       <div id="output">(no output yet)</div>
     </div>
 
-    <!-- Assistant -->
     <div class="panel">
       <strong>Assistant</strong>
       <div id="assistant">(no assistant output)</div>
-
-      <!-- Assistant action area is appended here by JS -->
+      <!-- assistant-actions appended by script -->
     </div>
   </main>
 
   <footer>© 2025 AI Compiler Assistant | Simple & clean layout</footer>
 
 <script>
-  // Initialize CodeMirror
+  // CodeMirror init
   const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
     mode: "python",
     theme: "dracula",
@@ -250,7 +108,7 @@
   const outputEl = document.getElementById('output');
   const assistantEl = document.getElementById('assistant');
 
-  // Container for the corrected-code action + confirmation UI
+  // action area
   const assistantActions = document.createElement('div');
   assistantActions.id = 'assistant-actions';
   assistantActions.style.marginTop = '8px';
@@ -262,30 +120,82 @@
     outputEl.style.color = isError ? '#ff7a7a' : '#00ff7f';
   }
 
-  // Helper: safely escape HTML for insertion inside <pre>
   function escapeHtml(s){
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  // Helper: extract corrected code from assistant raw text
+  // Improved extractor: returns ONLY the code text or null
   function extractCorrectedCode(rawText) {
     if (!rawText) return null;
 
-    // 1) Look for "Corrected Code" label then take everything after it (until end or next section)
-    let m = rawText.match(/Corrected\s*Code\s*[:\-]?\s*[\r\n]*([\s\S]*)$/i);
-    if (m && m[1].trim()) return m[1].trim();
+    // remove bold markers that might appear around titles
+    rawText = rawText.replace(/\*\*/g, '');
 
-    // 2) Fallback: first fenced code block ```...```
-    m = rawText.match(/```(?:[\w+-]*)\n?([\s\S]*?)```/);
-    if (m && m[1].trim()) return m[1].trim();
+    // 1) fenced code block priority
+    let m = rawText.match(/```(?:[\w+-]*)\n?([\s\S]*?)```/);
+    if (m && m[1].trim()) {
+      return m[1].trim();
+    }
 
-    // 3) If assistant returned a too-short answer but contains a semicolon or newline or equals sign, return it
-    if (/;|\n|=/m.test(rawText)) return rawText.trim();
+    // 2) "Corrected Code" label: take everything after it
+    m = rawText.match(/Corrected\s*Code\s*[:\-]?\s*[\r\n]*([\s\S]*)$/i);
+    let candidate = m ? m[1] : rawText;
 
-    return null;
+    if (!candidate || !candidate.trim()) return null;
+
+    // split into lines and pick only code-like lines
+    const lines = candidate.split(/\r?\n/);
+    const codeLike = lines.filter(line => {
+      const t = line.trim();
+      if (!t) return false;
+      // drop lines that look like section headers or plain explanation
+      if (/^(errors|explanation|fix|optimization)\b/i.test(t)) return false;
+      if (/^\*+$/.test(t)) return false; // stray ****
+      // keep lines that contain semicolon, equals sign, parentheses (print), or the 'integer' keyword,
+      // or start with typical identifiers followed by assignment
+      if (/[;=()]/.test(t)) return true;
+      if (/\binteger\b/i.test(t)) return true;
+      if (/^\s*[a-zA-Z_]\w*\s+[a-zA-Z_]\w*\s*;?$/.test(t)) return true; // e.g., "int a;"
+      if (/^\s*print\s*\(.*\)\s*;?$/.test(t)) return true;
+      // else discard
+      return false;
+    });
+
+    // If we found contiguous code-like lines, collapse consecutive groups and return longest group
+    if (codeLike.length) {
+      // sometimes non-code lines are interspersed; better to take contiguous groups from original lines
+      let groups = [];
+      let cur = [];
+      for (const line of lines) {
+        const t = line.trim();
+        if (!t) {
+          if (cur.length) { groups.push(cur.slice()); cur = []; }
+          continue;
+        }
+        // criteria same as filter
+        if (/[;=()]/.test(t) || /\binteger\b/i.test(t) || /^\s*print\s*\(.*\)\s*;?$/.test(t) || /^\s*[a-zA-Z_]\w*\s+[a-zA-Z_]\w*\s*;?$/.test(t)) {
+          cur.push(line);
+        } else {
+          if (cur.length) { groups.push(cur.slice()); cur = []; }
+        }
+      }
+      if (cur.length) groups.push(cur.slice());
+
+      // choose largest group (most lines)
+      if (groups.length) {
+        groups.sort((a,b)=>b.length-a.length);
+        return groups[0].join('\n').trim();
+      }
+      // fallback to codeLike join
+      return codeLike.join('\n').trim();
+    }
+
+    // fallback: remove stray markers and return candidate
+    const cleaned = candidate.replace(/^\s*[-\*\s]+$/gm, '').replace(/\*\*/g,'').trim();
+    return cleaned || null;
   }
 
-  // Render Assistant output (Markdown → HTML) and append the fancy corrected code box (if present)
+  // Render assistant (markdown -> sanitized html) and append cleaned corrected code box only if code exists
   function renderAssistant(assistantData){
     assistantActions.style.display = 'none';
     assistantActions.innerHTML = '';
@@ -307,18 +217,18 @@
       rawText = String(assistantData);
     }
 
-    // Render sanitized markdown
+    // render sanitized markdown for the user-visible explanation
     try {
-      const html = DOMPurify.sanitize(marked.parse(rawText));
-      assistantEl.innerHTML = html;
+      assistantEl.innerHTML = DOMPurify.sanitize(marked.parse(rawText));
     } catch (e) {
       assistantEl.textContent = rawText;
     }
 
-    // Try to find corrected code and, if present, render a fancy box + action buttons
+    // extract only the corrected code (clean)
     const corrected = extractCorrectedCode(rawText);
+
     if (corrected) {
-      // Build fancy corrected code UI
+      // append a clean corrected-code box (escaped)
       const fancy = document.createElement('div');
       fancy.className = 'corrected-wrap';
 
@@ -337,10 +247,9 @@
       left.appendChild(codeBox);
       fancy.appendChild(left);
 
-      // Append to assistant panel
       assistantEl.appendChild(fancy);
 
-      // Show action buttons
+      // show actions: use / copy
       assistantActions.style.display = 'flex';
       assistantActions.innerHTML = `
         <div style="display:flex;gap:8px;align-items:center;">
@@ -350,9 +259,7 @@
         <div id="replace-confirm" style="display:none;width:100%;margin-top:8px;"></div>
       `;
 
-      // Wire up events
       document.getElementById('insert-corrected').addEventListener('click', () => {
-        // reveal confirmation card
         const rc = document.getElementById('replace-confirm');
         rc.style.display = 'flex';
         rc.className = 'replace-confirm';
@@ -373,7 +280,6 @@
           editor.setValue(corrected);
           rc.style.display = 'none';
           rc.innerHTML = '';
-          // show transient note
           const n = document.createElement('div');
           n.className = 'transient-note';
           n.textContent = 'Editor replaced with corrected code.';
@@ -396,6 +302,7 @@
     }
   }
 
+  // Run button behaviour (POST /run)
   runBtn.addEventListener('click', async () => {
     const code = editor.getValue();
     if (!code.trim()) return setOutput('No code provided.', true);
@@ -425,7 +332,6 @@
           renderAssistant(json.assistant || null);
         } else {
           setOutput('Error: ' + (json.run_result?.error || 'Execution failed'), true);
-          // the assistant info might be nested under json.assistant or json.run_result.assistant
           renderAssistant(json.assistant || json.run_result?.assistant || null);
         }
       } else if ('output' in json || 'error' in json){
@@ -459,8 +365,10 @@
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runBtn.click();
   });
 
-  // Example: if you want to render a sample assistant response at load (for dev), uncomment:
-  // renderAssistant({assistant: "Line 1: Missing semicolon.\n\nCorrected Code\ninteger a=5;"});
+  // dev: example to test cleaned corrected code
+  // uncomment to see behavior:
+  // const sample = "Errors:\\nLine 1: ...\\n\\nCorrected Code:\\ninteger a=5;\\nprint(a);\\n\\n**";
+  // renderAssistant({assistant: sample});
 </script>
 </body>
 </html>

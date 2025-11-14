@@ -1,6 +1,14 @@
+import sys
+def install_requirements():
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+
+install_requirements()
 # compiler_server.py (only the updated run_code route shown)
 from flask import Flask, request, jsonify, send_from_directory
-import os, sys, webbrowser
+import os, webbrowser
+import subprocess
+
+
 
 # Ensure parent dir is importable (if required)
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))

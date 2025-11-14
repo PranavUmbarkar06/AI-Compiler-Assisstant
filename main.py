@@ -2,6 +2,12 @@
 import sys
 import traceback
 from io import StringIO
+import subprocess
+
+
+
+
+
 
 # Try to import Compiler modules (adjust path elsewhere if needed)
 try:
@@ -129,6 +135,5 @@ def main(code: str):
         # Unexpected top-level error: return assistant fallback
         assistant_result = run_compiler_from_code(code)
         return {"ran": False, "run_result": {"success": False, "stdout": "", "symbols": None, "error": str(e)}, "assistant": assistant_result}
-
 
 
