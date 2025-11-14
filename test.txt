@@ -1,9 +1,0 @@
-# This is a comment: Program to test the AI fixer.
-integer length = 10;
-integer width = 5;
-integer area ;
-
-# This line is missing a semicolon, triggering the AI fix
-area = length * width;
-
-print(area);

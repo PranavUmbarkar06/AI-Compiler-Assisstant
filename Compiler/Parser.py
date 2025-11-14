@@ -4,7 +4,7 @@ class ASTNode:
         self.__dict__.update(kwargs)
         
     def __repr__(self):
-        # A simple string representation for debugging
+        
         attrs = ', '.join(f'{k}={repr(v)}' for k, v in self.__dict__.items() if k != 'type')
         return f"<{self.type} {attrs}>"
 

@@ -16,12 +16,7 @@ from Compiler import Lexer, Parser, Evaluator
 from io import StringIO
 
 def offline_assistant(code: str) -> list:
-    """
-    Analyze `code` and return a list of error messages found.
-    - Performs lexing & parsing; returns syntax/lexer errors.
-    - If parsing succeeds, runs the interpreter and returns runtime errors.
-    - If no errors are found, returns an empty list.
-    """
+    
     errors = []
 
     # 1) Lexing & Parsing

@@ -17,10 +17,7 @@ except Exception:
 
 
 def run_compiler_from_code(code: str):
-    """
-    Fallback assistant pipeline. Tries online assistant, otherwise offline assistant.
-    Returns a dict with keys: 'assistant' (raw response) and 'assistant_type' ('online'|'offline').
-    """
+    
     system_instruction = r'''
     You are a friendly, homely compiler assistant who reviews user code to find syntax, logical, and runtime errors.
     You point out exact lines and explain issues clearly yet warmly.
@@ -100,7 +97,7 @@ def run(code: str, show_tokens: bool = False) -> dict:
         interp = Evaluator.Interpreter()
         interp.eval(ast)
 
-        # Final snapshot (keeps parity with prior prints)
+        
         print()
         print(interp)
 
@@ -119,10 +116,7 @@ def run(code: str, show_tokens: bool = False) -> dict:
 
 
 def main(code: str):
-    """
-    Public entry: attempt to run code; on interpreter failure, fall back to the assistant pipeline.
-    Returns a JSON-serializable dict describing either run results or assistant output.
-    """
+    
     try:
         result = run(code, show_tokens=False)
         # If interpreter raised an error (success False), fallback to assistant
@@ -138,4 +132,3 @@ def main(code: str):
 
 
 
-print(run_compiler_from_code('integer a=5; pront(a)'))

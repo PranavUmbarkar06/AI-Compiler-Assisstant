@@ -16,45 +16,56 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>
 
   <style>
+    :root {
+      --bg: #0b0e14;
+      --panel: #071017;
+      --muted: #8b949e;
+      --accent: #ff7b59;
+      --card-border: rgba(255,255,255,0.04);
+    }
+    html,body { height:100%; }
     body {
       font-family: Arial, sans-serif;
-      background:#0b0e14;
-      color:#e6eef6;
+      background: var(--bg);
+      color: #e6eef6;
       margin:0;
       display:flex;
       flex-direction:column;
       align-items:center;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
     }
 
     header {
       width:100%;
       text-align:center;
-      padding:22px 10px;
-      background:#111827;
-      border-bottom:1px solid #222;
+      padding:20px 12px;
+      background:#0f1724;
+      border-bottom:1px solid #111827;
     }
-
     header h1 {
       margin:0;
-      color:#ff7b59;
-      font-size:24px;
+      color:var(--accent);
+      font-size:22px;
+      letter-spacing:0.2px;
     }
 
     main {
       width:92%;
       max-width:1000px;
-      margin:25px auto;
+      margin:20px auto;
       display:flex;
       flex-direction:column;
-      gap:15px;
+      gap:14px;
     }
 
     .panel {
-      background:#071017;
-      padding:10px;
-      border-radius:6px;
-      border:1px solid #233;
+      background: var(--panel);
+      padding:12px;
+      border-radius:8px;
+      border:1px solid var(--card-border);
       overflow:auto;
+      box-shadow: 0 2px 8px rgba(3,7,18,0.6);
     }
 
     #editor-container {
@@ -67,7 +78,26 @@
       height:100%;
       border-radius:6px;
       font-size:15px;
+      outline: none;
     }
+
+    .controls {
+      margin-top:10px;
+      display:flex;
+      gap:8px;
+      justify-content:flex-end;
+    }
+
+    button {
+      padding:8px 12px;
+      border-radius:8px;
+      border:0;
+      cursor:pointer;
+      font-weight:600;
+      font-size:13px;
+    }
+    button.run { background:#16a34a; color:white; }
+    button.clear { background:#ef4444; color:white; }
 
     #output {
       background:#000;
@@ -76,7 +106,7 @@
       border-radius:6px;
       font-family:monospace;
       white-space:pre-wrap;
-      min-height:160px;
+      min-height:140px;
     }
 
     #assistant {
@@ -85,27 +115,9 @@
       white-space:pre-wrap;
     }
 
-    .controls {
-      margin-top:8px;
-      display:flex;
-      gap:8px;
-      justify-content:flex-end;
-    }
-
-    button {
-      padding:8px 12px;
-      border-radius:6px;
-      border:0;
-      cursor:pointer;
-      font-weight:600;
-    }
-
-    button.run { background:#28a745; color:white; }
-    button.clear { background:#dc3545; color:white; }
-
     footer {
       margin:18px 0 36px;
-      color:#8b949e;
+      color:var(--muted);
       font-size:13px;
     }
 
@@ -114,6 +126,78 @@
     #assistant table { border-collapse:collapse; width:100%; margin:8px 0; }
     #assistant th, #assistant td { border:1px solid rgba(255,255,255,0.06); padding:6px 8px; text-align:left; }
     #assistant pre { background:#05111a; padding:8px; border-radius:6px; overflow:auto; color:#d8f3ff; }
+
+    /* Fancy corrected code box (techy) */
+    .corrected-wrap {
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      justify-content:space-between;
+    }
+    .corrected-left {
+      flex:1;
+    }
+    .corrected-title {
+      display:inline-block;
+      background:linear-gradient(90deg,#0ea5a9 0%, #60a5fa 100%);
+      color:#042027;
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:700;
+      font-size:13px;
+      margin-bottom:8px;
+      box-shadow: 0 4px 18px rgba(96,165,250,0.08);
+    }
+    .corrected-code-box {
+      background: linear-gradient(180deg, rgba(6,10,14,0.9), rgba(8,12,18,0.9));
+      border: 1px solid rgba(96,165,250,0.06);
+      padding:12px;
+      border-radius:8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+      white-space: pre;
+      color: #d1eaff;
+      overflow:auto;
+      font-size:13px;
+      box-shadow: 0 6px 26px rgba(2,6,23,0.6);
+    }
+
+    /* Small action area */
+    #assistant-actions {
+      margin-top:10px;
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      align-items:center;
+    }
+    .btn-primary {
+      background:#2563eb;color:#fff;padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:700;
+    }
+    .btn-ghost { background:transparent;color:#dbefff;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);cursor:pointer; }
+
+    /* confirmation card */
+    .replace-confirm {
+      margin-top:10px;
+      padding:10px;
+      border-radius:8px;
+      background: rgba(255,255,255,0.02);
+      border:1px solid rgba(255,255,255,0.03);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .transient-note {
+      color:#a7f3d0;
+      font-size:13px;
+      margin-left:8px;
+    }
+
+    /* Responsive */
+    @media (max-width:700px) {
+      .corrected-wrap { flex-direction:column; }
+      .corrected-title { margin-bottom:6px; }
+    }
   </style>
 </head>
 
@@ -125,11 +209,7 @@
   <main>
     <!-- Code Editor -->
     <div class="panel" id="editor-container">
-      <textarea id="code">integer x = 10;
-integer y = 5;
-integer z = x + y * (2 + 3);
-print(z);
-print("done");</textarea>
+      <textarea id="code" placeholder="enter code here...">integer a=5</textarea>
 
       <div class="controls">
         <button id="run" class="run">Run ▶</button>
@@ -147,116 +227,240 @@ print("done");</textarea>
     <div class="panel">
       <strong>Assistant</strong>
       <div id="assistant">(no assistant output)</div>
+
+      <!-- Assistant action area is appended here by JS -->
     </div>
   </main>
 
   <footer>© 2025 AI Compiler Assistant | Simple & clean layout</footer>
 
-  <script>
-    // Initialize CodeMirror
-    const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
-      mode: "python",
-      theme: "dracula",
-      lineNumbers: true,
-      indentUnit: 2,
-      tabSize: 2
-    });
-    editor.setSize("100%", "100%");
+<script>
+  // Initialize CodeMirror
+  const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+    mode: "python",
+    theme: "dracula",
+    lineNumbers: true,
+    indentUnit: 2,
+    tabSize: 2
+  });
+  editor.setSize("100%", "100%");
 
-    const runBtn = document.getElementById('run');
-    const clearBtn = document.getElementById('clear');
-    const outputEl = document.getElementById('output');
-    const assistantEl = document.getElementById('assistant');
+  const runBtn = document.getElementById('run');
+  const clearBtn = document.getElementById('clear');
+  const outputEl = document.getElementById('output');
+  const assistantEl = document.getElementById('assistant');
 
-    function setOutput(text, isError=false){
-      outputEl.textContent = text || '';
-      outputEl.style.color = isError ? '#ff7a7a' : '#00ff7f';
+  // Container for the corrected-code action + confirmation UI
+  const assistantActions = document.createElement('div');
+  assistantActions.id = 'assistant-actions';
+  assistantActions.style.marginTop = '8px';
+  assistantActions.style.display = 'none';
+  assistantEl.parentNode.appendChild(assistantActions);
+
+  function setOutput(text, isError=false){
+    outputEl.textContent = text || '';
+    outputEl.style.color = isError ? '#ff7a7a' : '#00ff7f';
+  }
+
+  // Helper: safely escape HTML for insertion inside <pre>
+  function escapeHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // Helper: extract corrected code from assistant raw text
+  function extractCorrectedCode(rawText) {
+    if (!rawText) return null;
+
+    // 1) Look for "Corrected Code" label then take everything after it (until end or next section)
+    let m = rawText.match(/Corrected\s*Code\s*[:\-]?\s*[\r\n]*([\s\S]*)$/i);
+    if (m && m[1].trim()) return m[1].trim();
+
+    // 2) Fallback: first fenced code block ```...```
+    m = rawText.match(/```(?:[\w+-]*)\n?([\s\S]*?)```/);
+    if (m && m[1].trim()) return m[1].trim();
+
+    // 3) If assistant returned a too-short answer but contains a semicolon or newline or equals sign, return it
+    if (/;|\n|=/m.test(rawText)) return rawText.trim();
+
+    return null;
+  }
+
+  // Render Assistant output (Markdown → HTML) and append the fancy corrected code box (if present)
+  function renderAssistant(assistantData){
+    assistantActions.style.display = 'none';
+    assistantActions.innerHTML = '';
+
+    if (!assistantData){
+      assistantEl.innerHTML = '(no assistant output)';
+      return;
     }
 
-    // Render Assistant output (Markdown → HTML)
-    function renderAssistant(assistantData){
-      if (!assistantData){
-        assistantEl.innerHTML = '(no assistant output)';
-        return;
-      }
-
-      let mdText = "";
-      if (typeof assistantData === 'object'){
-        if (typeof assistantData.assistant === 'string')
-          mdText = assistantData.assistant;
-        else
-          mdText = "```\n" + JSON.stringify(assistantData, null, 2) + "\n```";
-      } else if (typeof assistantData === 'string'){
-        mdText = assistantData;
-      } else {
-        mdText = String(assistantData);
-      }
-
-      try {
-        const html = DOMPurify.sanitize(marked.parse(mdText));
-        assistantEl.innerHTML = html;
-      } catch (e) {
-        assistantEl.textContent = mdText;
-      }
+    let rawText = "";
+    if (typeof assistantData === 'object'){
+      if (typeof assistantData.assistant === 'string')
+        rawText = assistantData.assistant;
+      else
+        rawText = JSON.stringify(assistantData, null, 2);
+    } else if (typeof assistantData === 'string'){
+      rawText = assistantData;
+    } else {
+      rawText = String(assistantData);
     }
 
-    runBtn.addEventListener('click', async () => {
-      const code = editor.getValue();
-      if (!code.trim()) return setOutput('No code provided.', true);
+    // Render sanitized markdown
+    try {
+      const html = DOMPurify.sanitize(marked.parse(rawText));
+      assistantEl.innerHTML = html;
+    } catch (e) {
+      assistantEl.textContent = rawText;
+    }
 
-      runBtn.disabled = true;
-      runBtn.textContent = 'Running…';
-      setOutput('Running...', false);
-      assistantEl.textContent = '(waiting for assistant...)';
+    // Try to find corrected code and, if present, render a fancy box + action buttons
+    const corrected = extractCorrectedCode(rawText);
+    if (corrected) {
+      // Build fancy corrected code UI
+      const fancy = document.createElement('div');
+      fancy.className = 'corrected-wrap';
 
-      try {
-        const res = await fetch('/run', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ code })
+      const left = document.createElement('div');
+      left.className = 'corrected-left';
+
+      const title = document.createElement('div');
+      title.className = 'corrected-title';
+      title.textContent = 'Corrected Code';
+
+      const codeBox = document.createElement('pre');
+      codeBox.className = 'corrected-code-box';
+      codeBox.innerHTML = escapeHtml(corrected);
+
+      left.appendChild(title);
+      left.appendChild(codeBox);
+      fancy.appendChild(left);
+
+      // Append to assistant panel
+      assistantEl.appendChild(fancy);
+
+      // Show action buttons
+      assistantActions.style.display = 'flex';
+      assistantActions.innerHTML = `
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="insert-corrected" class="btn-primary">Use corrected code</button>
+          <button id="copy-corrected" class="btn-ghost">Copy</button>
+        </div>
+        <div id="replace-confirm" style="display:none;width:100%;margin-top:8px;"></div>
+      `;
+
+      // Wire up events
+      document.getElementById('insert-corrected').addEventListener('click', () => {
+        // reveal confirmation card
+        const rc = document.getElementById('replace-confirm');
+        rc.style.display = 'flex';
+        rc.className = 'replace-confirm';
+        rc.innerHTML = `
+          <div style="font-size:13px;color:#dbefff;">Replace the editor content with the AI-corrected code?</div>
+          <div style="display:flex;gap:8px;">
+            <button id="confirm-yes" class="btn-primary">Yes — replace</button>
+            <button id="confirm-no" class="btn-ghost">No — keep current</button>
+          </div>
+        `;
+
+        document.getElementById('confirm-no').addEventListener('click', () => {
+          rc.style.display = 'none';
+          rc.innerHTML = '';
         });
-        const json = await res.json();
 
-        if (json && typeof json === 'object' && ('ran' in json || 'run_result' in json || 'assistant' in json)){
-          if (json.ran){
-            const runResult = json.run_result || {};
-            let stdout = (runResult.stdout || '').trim();
-            if (runResult.symbols)
-              stdout += '\n\nFinal Symbols:\n' + JSON.stringify(runResult.symbols, null, 2);
-            setOutput(stdout || '(no stdout)');
-            renderAssistant(json.assistant || null);
-          } else {
-            setOutput('Error: ' + (json.run_result?.error || 'Execution failed'), true);
-            renderAssistant(json.assistant || json.run_result?.assistant || null);
-          }
-        } else if ('output' in json || 'error' in json){
-          if (json.error && !json.output)
-            setOutput('Error: ' + json.error, true);
-          else
-            setOutput(json.output || json.error || '(no output)', !!json.error);
-          renderAssistant(json.assistant ?? null);
+        document.getElementById('confirm-yes').addEventListener('click', () => {
+          editor.setValue(corrected);
+          rc.style.display = 'none';
+          rc.innerHTML = '';
+          // show transient note
+          const n = document.createElement('div');
+          n.className = 'transient-note';
+          n.textContent = 'Editor replaced with corrected code.';
+          assistantActions.appendChild(n);
+          setTimeout(()=> n.remove(), 2400);
+        });
+      });
+
+      document.getElementById('copy-corrected').addEventListener('click', () => {
+        navigator.clipboard?.writeText(corrected).then(() => {
+          const n = document.createElement('div');
+          n.className = 'transient-note';
+          n.textContent = 'Corrected code copied to clipboard.';
+          assistantActions.appendChild(n);
+          setTimeout(()=> n.remove(), 1800);
+        }).catch(() => {
+          alert('Copy failed — you can manually select and copy the corrected code.');
+        });
+      });
+    }
+  }
+
+  runBtn.addEventListener('click', async () => {
+    const code = editor.getValue();
+    if (!code.trim()) return setOutput('No code provided.', true);
+
+    runBtn.disabled = true;
+    runBtn.textContent = 'Running…';
+    setOutput('Running...', false);
+    assistantEl.textContent = '(waiting for assistant...)';
+    assistantActions.style.display = 'none';
+    assistantActions.innerHTML = '';
+
+    try {
+      const res = await fetch('/run', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ code })
+      });
+      const json = await res.json();
+
+      if (json && typeof json === 'object' && ('ran' in json || 'run_result' in json || 'assistant' in json)){
+        if (json.ran){
+          const runResult = json.run_result || {};
+          let stdout = (runResult.stdout || '').trim();
+          if (runResult.symbols)
+            stdout += '\n\nFinal Symbols:\n' + JSON.stringify(runResult.symbols, null, 2);
+          setOutput(stdout || '(no stdout)');
+          renderAssistant(json.assistant || null);
         } else {
-          setOutput('Unexpected server response', true);
-          renderAssistant(json);
+          setOutput('Error: ' + (json.run_result?.error || 'Execution failed'), true);
+          // the assistant info might be nested under json.assistant or json.run_result.assistant
+          renderAssistant(json.assistant || json.run_result?.assistant || null);
         }
-      } catch (err) {
-        setOutput('Request failed: ' + String(err), true);
-        renderAssistant(null);
-      } finally {
-        runBtn.disabled = false;
-        runBtn.textContent = 'Run ▶';
+      } else if ('output' in json || 'error' in json){
+        if (json.error && !json.output)
+          setOutput('Error: ' + json.error, true);
+        else
+          setOutput(json.output || json.error || '(no output)', !!json.error);
+        renderAssistant(json.assistant ?? null);
+      } else {
+        setOutput('Unexpected server response', true);
+        renderAssistant(json);
       }
-    });
+    } catch (err) {
+      setOutput('Request failed: ' + String(err), true);
+      renderAssistant(null);
+    } finally {
+      runBtn.disabled = false;
+      runBtn.textContent = 'Run ▶';
+    }
+  });
 
-    clearBtn.addEventListener('click', () => {
-      editor.setValue('');
-      setOutput('');
-      assistantEl.textContent = '';
-    });
+  clearBtn.addEventListener('click', () => {
+    editor.setValue('');
+    setOutput('');
+    assistantEl.textContent = '';
+    assistantActions.style.display = 'none';
+    assistantActions.innerHTML = '';
+  });
 
-    window.addEventListener('keydown', e => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runBtn.click();
-    });
-  </script>
+  window.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runBtn.click();
+  });
+
+  // Example: if you want to render a sample assistant response at load (for dev), uncomment:
+  // renderAssistant({assistant: "Line 1: Missing semicolon.\n\nCorrected Code\ninteger a=5;"});
+</script>
 </body>
 </html>
