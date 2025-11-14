@@ -1,4 +1,4 @@
-AI Compiler Assistant
+#AI Compiler Assistant
 
 An interactive web-based compiler assistant that can lex, parse, and evaluate a custom programming language, while also providing AI-powered error detection, explanations, and auto-correction.
 
