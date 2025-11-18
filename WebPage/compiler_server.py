@@ -1,6 +1,13 @@
 import sys
+import subprocess
+import os
+
 def install_requirements():
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+    base_dir = os.path.dirname(os.path.abspath(__file__))   # WebPage/
+    req_path = os.path.join(base_dir, "..", "requirements.txt")  # one folder up
+
+    req_path = os.path.abspath(req_path)  # normalize
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", req_path])
 
 install_requirements()
 # compiler_server.py (only the updated run_code route shown)
